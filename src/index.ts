@@ -3,7 +3,7 @@ import fetch from "node-fetch";
 import * as sharp from "sharp";
 
 const PORT = process.env.PORT || 8080;
-const ALLOWED_HOST = process.env.ALLOWED_HOST;
+const ALLOWED_HOST = process.env.ALLOWED_HOST || 'http://localhost:3333';
 const app = express();
 
 const fetchImage = async (url: string) => {
@@ -13,9 +13,9 @@ const fetchImage = async (url: string) => {
     let format = url.split(".").pop();
     if (
       fetchReq.headers.has("content-type") &&
-      fetchReq.headers.get("content-type").startsWith("assets/")
+      fetchReq.headers.get("content-type").startsWith("image/")
     ) {
-      format = fetchReq.headers.get("content-type").replace("assets/", "");
+      format = fetchReq.headers.get("content-type").replace("image/", "");
     }
 
     return {
