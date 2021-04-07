@@ -15,10 +15,6 @@ export class ResizeFormatImageRoutes {
     return this._router;
   }
   private setRoutes() {
-    this.router.get(
-      "/",
-      this.middleware.verifyQueryUrl,
-      this.controller.resize
-    );
+    this.router.get("/", this.middleware.verifyQueryUrl, this.controller.get);
   }
 }

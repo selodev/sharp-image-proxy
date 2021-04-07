@@ -5,7 +5,7 @@ import { ResizeFormatImageService } from "./service";
 export class ResizeFormatImageController {
   private readonly service: ResizeFormatImageService = new ResizeFormatImageService();
 
-  public async resize(req: Request, res: Response, next: NextFunction) {
+  public async get(req: Request, res: Response, next: NextFunction) {
     const url = req.query.url.toString();
     const quality = req.query.quality
       ? parseInt(req.query.quality.toString())
