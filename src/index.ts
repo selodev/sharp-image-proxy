@@ -9,7 +9,7 @@ export class App {
   private readonly appRoutes: AppRoutes = new AppRoutes();
   port: number;
 
-  public constructor(port) {
+  public constructor(port: any) {
     this.port = port;
     this.setMiddleware();
     this.setRoutes();

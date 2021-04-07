@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 
 export class ResizeFormatImageMiddleware {
-  allowedHost = process.env.ALLOWED_HOST;
-  
+  allowedHost: string = process.env.ALLOWED_HOST || "";
+
   public verifyQueryUrl(req: Request, res: Response, next: NextFunction) {
     if (!(req.query.url && req.query.url.toString().includes("://"))) {
       res.status(400).send("URL is required");

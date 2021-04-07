@@ -1,4 +1,4 @@
-import * as sharp from "sharp";
+import sharp from "sharp";
 import { NextFunction, Request, Response } from "express";
 import { ResizeFormatImageService } from "./service";
 
@@ -6,33 +6,38 @@ export class ResizeFormatImageController {
   private readonly service: ResizeFormatImageService = new ResizeFormatImageService();
 
   public async get(req: Request, res: Response, next: NextFunction) {
-    const url = req.query.url.toString();
-    const quality = req.query.quality
-      ? parseInt(req.query.quality.toString())
-      : 100;
+    let { url, width, height, format, quality } = this.service.formatReqQueries(
+      req.query
+    );
+
+    if (!url) {
+      res.status(400).send("Image url is missing");
+      return;
+    }
+
     const image = await this.service.fetchImage(url);
 
-    if (image.status !== 200) {
+    if (image?.status !== 200 && !image?.format) {
       res.status(400).send("Image not found");
       return;
     }
 
-    const format = req.query.format
-      ? req.query.format.toString()
-      : image.format;
-    const toFormat = format === "avif" ? "heif" : format;
-    const compression = format === "avif" ? "av1" : undefined;
-    const pipeline = sharp(image.buffer);
+    format = format ?? image.format;
 
-    let width = req.query.width ? parseInt(req.query.width.toString()) : null;
-    let height = req.query.height
-      ? parseInt(req.query.height.toString())
-      : null;
+    const toFormat = format === "avif" ? "heif" : image.format;
+    const compression = format === "avif" ? "av1" : undefined;
+
     try {
-      width =
-        width && (await pipeline.metadata()).width >= width ? width : null;
-      height =
-        height && (await pipeline.metadata()).height >= height ? height : null;
+      const pipeline = sharp(image.buffer);
+      const {
+        width: metaDataWidth,
+        height: metaDataHeight,
+      } = await pipeline.metadata();
+
+      if (metaDataWidth && metaDataHeight) {
+        width = width && metaDataWidth >= width ? width : null;
+        height = height && metaDataHeight >= height ? height : null;
+      }
 
       if (width || height) {
         pipeline.resize(width, height, { fit: "outside" });
@@ -42,8 +47,8 @@ export class ResizeFormatImageController {
       res.setHeader("Content-Type", "image/" + format);
 
       const formattedFile = await pipeline.toFormat(toFormat as any, {
-        quality: quality,
-        compression: compression,
+        quality,
+        compression,
       });
       await formattedFile.toFile("./images/img.avif");
 
