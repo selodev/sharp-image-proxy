@@ -1,17 +1,26 @@
 {
   "compilerOptions": {
+    "target": "es5",
     "module": "commonjs",
-    "target": "es6",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    /* Strict Type-Checking Options */
+    "strict": true,
     "noImplicitAny": false,
-    "sourceMap": false,
-    "emitDecoratorMetadata": true,
+    /* Module Resolution Options */
+    "moduleResolution": "node",
+    "baseUrl": "./src",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
-    "outDir": "dist"
+    "emitDecoratorMetadata": true,
+    "allowJs": true,
+    /* Advanced Options */
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "lib": ["es2021"],
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
 }

@@ -1,14 +1,17 @@
-import sharp from "sharp";
-import { NextFunction, Request, Response } from "express";
+import sharp, { Sharp } from "sharp";
+import { Request, Response } from "express";
 import { ResizeFormatImageService } from "./service";
 
 export class ResizeFormatImageController {
-  private readonly service: ResizeFormatImageService = new ResizeFormatImageService();
+  private readonly service: ResizeFormatImageService;
+  constructor() {
+    this.service = new ResizeFormatImageService();
+    this.get = this.get.bind(this);
+  }
 
-  public async get(req: Request, res: Response, next: NextFunction) {
-    let { url, width, height, format, quality } = this.service.formatReqQueries(
-      req.query
-    );
+  public async get(req: Request, res: Response): Promise<void> {
+    const { url, quality } = this.service.formatReqQueries(req);
+    let { width, height, format } = this.service.formatReqQueries(req);
 
     if (!url) {
       res.status(400).send("Image url is missing");
@@ -22,13 +25,22 @@ export class ResizeFormatImageController {
       return;
     }
 
-    format = format ?? image.format;
+    const allowedFormats = ["avif", "heif", "webp"];
+    format = format ?? image?.format ?? "";
+    format = format === "avif" ? "heif" : format;
+    if (!allowedFormats.includes(format)) {
+      console.log(image.format, format);
 
-    const toFormat = format === "avif" ? "heif" : image.format;
+      res.status(400).send("Image format not supported");
+      return;
+    }
+
+    const toFormat = allowedFormats.includes(format) ? format : "jpg";
+    console.log(toFormat);
     const compression = format === "avif" ? "av1" : undefined;
 
     try {
-      const pipeline = sharp(image.buffer);
+      const pipeline: Sharp = sharp(image.buffer);
       const {
         width: metaDataWidth,
         height: metaDataHeight,
@@ -45,12 +57,7 @@ export class ResizeFormatImageController {
 
       res.setHeader("Cache-Control", "public, max-age=31536000");
       res.setHeader("Content-Type", "image/" + format);
-
-      const formattedFile = await pipeline.toFormat(toFormat as any, {
-        quality,
-        compression,
-      });
-      await formattedFile.toFile("./images/img.avif");
+      this.service.pipelineToFormat(pipeline, toFormat, quality, compression);
 
       pipeline.toBuffer((err, buffer) => {
         console.log(err);

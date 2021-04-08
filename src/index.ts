@@ -1,4 +1,4 @@
-import * as express from "express";
+import express from "express";
 import cors from "./middlewares/cors";
 import { AppRoutes } from "./routes";
 
@@ -9,7 +9,7 @@ export class App {
   private readonly appRoutes: AppRoutes = new AppRoutes();
   port: number;
 
-  public constructor(port: any) {
+  public constructor(port: number) {
     this.port = port;
     this.setMiddleware();
     this.setRoutes();
@@ -29,11 +29,11 @@ export class App {
   private setRoutes() {
     this.app.use("/", this.appRoutes.router);
   }
-  public listen() {
+  public listen(): void {
     this.app.listen(this.port, () =>
       console.log(`Started on PORT: ${this.port}`)
     );
   }
 }
 
-new App(PORT).listen();
+new App(Number(PORT)).listen();
