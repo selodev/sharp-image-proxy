@@ -2,6 +2,7 @@
 .dockerignore
 .gitignore
 Dockerfile
+Dockerfile.base
 node_modules
 npm-debug.log
 dist

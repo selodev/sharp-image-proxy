@@ -20,7 +20,7 @@ export class ResizeFormatImageService {
       return {
         status: fetchReq.status,
         buffer: await (fetchReq as Response).buffer(),
-        format: format || "",
+        format: format,
       };
     } catch (e) {
       return { status: 500 };
@@ -36,22 +36,21 @@ export class ResizeFormatImageService {
       quality: quality ? parseInt(quality.toString()) : 100,
     };
   }
-  async pipelineToFormat(
-    pipeline: Sharp,
-    format: string,
-    quality: number,
-    compression: string | undefined
-  ): Promise<void> {
+  pipelineToFormat(pipeline: Sharp, format: string, quality: number): void {
+    if (format == "heif") {
+      console.log("Formatting heif");
+
+      pipeline.toFormat("heif", { quality, compression: "av1" });
+    }
     if (format == "avif") {
-      await pipeline.toFormat("avif", {
-        quality,
-        compression,
-      });
+      console.log("Formatting avif");
+
+      pipeline.toFormat("avif", { quality });
     }
     if (format == "webp") {
-      await pipeline.toFormat("webp", {
+      console.log("Formatting webp");
+      pipeline.toFormat("webp", {
         quality,
-        compression,
       });
     }
   }

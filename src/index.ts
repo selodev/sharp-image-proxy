@@ -28,6 +28,12 @@ export class App {
   }
   private setRoutes() {
     this.app.use("/", this.appRoutes.router);
+    this.app.use(
+      express.urlencoded({
+        extended: true,
+      })
+    );
+    this.app.use(express.json());
   }
   public listen(): void {
     this.app.listen(this.port, () =>
