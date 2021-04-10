@@ -6,3 +6,4 @@ Dockerfile.base
 node_modules
 npm-debug.log
 dist
+package-lock.json

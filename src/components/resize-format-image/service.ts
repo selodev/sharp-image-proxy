@@ -44,7 +44,6 @@ export class ResizeFormatImageService {
     }
     if (format == "avif") {
       console.log("Formatting avif");
-
       pipeline.toFormat("avif", { quality });
     }
     if (format == "webp") {

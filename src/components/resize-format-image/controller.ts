@@ -50,17 +50,22 @@ export class ResizeFormatImageController {
 
       this.service.pipelineToFormat(pipeline, format, quality);
 
-      const { data, info } = await pipeline.toBuffer({
-        resolveWithObject: true,
-      });
-      console.log(data, info);
       pipeline.on("error", (error) => {
-        res.status(404).json({ data: error });
+        res.status(404).json({ data: error, info: "none" });
 
         console.error(error);
         return;
       });
-      res.json({ data, info });
+      //pipeline.pipe(res);
+      const { data, info } = await pipeline.toBuffer({
+        resolveWithObject: true,
+      });
+      console.log(data, info);
+      if (data && info) {
+        res.json({ data, info });
+      } else {
+        res.json({ data: null, info: null });
+      }
     } catch (err) {
       console.log(err);
     }

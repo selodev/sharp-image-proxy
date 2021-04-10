@@ -2,8 +2,6 @@ import express from "express";
 import cors from "./middlewares/cors";
 import { AppRoutes } from "./routes";
 
-const PORT = process.env.PORT || 8080;
-
 export class App {
   private readonly _app: express.Application = express();
   private readonly appRoutes: AppRoutes = new AppRoutes();
@@ -41,5 +39,7 @@ export class App {
     );
   }
 }
+
+const PORT = process.env.PORT || 8080;
 
 new App(Number(PORT)).listen();

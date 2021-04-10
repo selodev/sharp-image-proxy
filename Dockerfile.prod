@@ -1,0 +1,43 @@
+# ---- Base Node ----
+FROM node:current-alpine3.13 AS base
+
+RUN set -x && \
+    apk add vips fftw --update --no-cache \
+    --repository https://alpine.global.ssl.fastly.net/alpine/edge/testing/ \
+    --repository https://alpine.global.ssl.fastly.net/alpine/edge/main
+
+RUN set -x && \
+    npm install -g npm
+
+WORKDIR /usr/src/app
+
+COPY package.json ./
+
+# ---- Dependencies ----
+FROM base AS dependencies
+
+RUN set -x && \
+    npm set progress=false && \
+    npm config set depth 0 && \
+    npm config set ignore-scripts false
+
+RUN npm install --only=production 
+
+# ---- Compile ----
+FROM dependencies AS compile
+
+COPY . .
+
+RUN npm run webpack
+
+
+# ---- Release ----
+FROM base AS release
+
+COPY --from=dependencies /usr/src/app/node_modules ./node_modules
+
+COPY --from=compile /usr/src/app/dist ./dist
+
+EXPOSE 8080
+
+CMD [ "npm", "run", "start" ]

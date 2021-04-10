@@ -4,7 +4,7 @@ export class ResizeFormatImageMiddleware {
   allowedImageHost: string;
   constructor() {
     this.allowedImageHost =
-      process.env.ALLOWED_HOST || "isquadrepairsandiego.com";
+      process.env.ALLOWED_HOST || "localhost:3333";
     this.verifyQueryUrl = this.verifyQueryUrl.bind(this);
   }
   public verifyQueryUrl(req: Request, res: Response, next: NextFunction): void {
