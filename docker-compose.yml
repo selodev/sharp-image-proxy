@@ -1,4 +1,4 @@
-version: "3.9"
+version: "3.8"
 
 services:
   sharp:
@@ -8,5 +8,7 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ${PWD}:/usr/src/app
+      - ${PWD} : /usr/src/app
     network_mode: host
+    extra_hosts:
+      - "host.docker.external:host-gateway"
